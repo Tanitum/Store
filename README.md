@@ -6,3 +6,29 @@ Store project, весна 2022.
 магазины (Store), товары (Products), заказы (Order), корзины (ProductsOrder). 
 В дальнейшем также будут реализованы продавцы.
 В перспективе возможно добавление чата между продавцом и клиентом.
+
+Описание запуска приложения:
+1.1) Запустить класс main 
+или
+1.2) ЭТОТ СПОСОБ СЕЙЧАС НЕ РАБОТАЕТ С ДАННЫМИ БД. Войти в режим командной строки (команда cmd), перейти в папку с pom.xml и ввести команду mvn clean package
+Maven cгенерирует исполняемый jar-файл с именем Store-1.0.jar
+Перейдите в папку cd target
+Затем запустите jar-файл: java -jar Store-1.0.jar
+2) Запустить одну из доступных команд в браузере.
+3) Для окончания использования localhost:8089 нужно остановить класс main в первом способе, остановить процесс Java(TM) Platform SE binary во втором способе.
+
+Доступные команды:
+Вывод всех магазинов из базы данных: http://localhost:8089/store
+Вывод всех клиентов из базы данных: http://localhost:8089/client
+Вывод информации обо всех продуктах из базы данных: http://localhost:8089/products
+Вывод информации о магазине из базы данных по id: http://localhost:8089/store/{id}
+Сохранить новый магазин в базу данных по названию: http://localhost:8089/store/save/{name}
+Удалить существующий магазин в базе данных по id: http://localhost:8089/store/delete/{id} 
+Обновить название существующего магазина в базе данных по id: http://localhost:8089/store/update/{id}/{name}
+
+Информация о модулях:
+Client (client в базе данных): id, name, surname
+ProductsOrder (productsorder в базе данных): id, productid, orderid, quantity
+Order (clientorder в базе данных): id, number, status, orderdate
+Products (products в базе данных): id, storeid, name, price
+Store (store в базе данных): id, name

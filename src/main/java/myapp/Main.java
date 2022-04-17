@@ -10,11 +10,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 
-//@SpringBootApplication
-@ComponentScan
-@EnableAutoConfiguration
+@SpringBootApplication
 public class Main {
-    public static void main(String[] args) throws  Exception{
+
+  /*  public static void main(String[] args) throws  Exception{
 
         StoreDao store= new StoreDao();
         //System.out.println(store.findStoreById(1).toString());
@@ -57,11 +56,10 @@ public class Main {
         System.out.println(productsorder.findAll());
        // productsorder.delete(productsorder.findProductsOrdersById(3));
     }
+*/
 
-
-    // не работает
-     /*      public static void main(String[] args) {
+           public static void main(String[] args) {
             SpringApplication.run(Main.class, args);
-   }  */
+   }
 
 }
