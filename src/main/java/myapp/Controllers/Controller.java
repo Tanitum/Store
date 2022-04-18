@@ -3,6 +3,7 @@ package myapp.Controllers;
 import dao.ClientDao;
 import dao.ProductsDao;
 import dao.StoreDao;
+import dao.UserDao;
 import model.Store;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,13 @@ public class Controller {
     public String Allclients() {
         ClientDao client= new ClientDao();
         return client.findAll().toString();
+    }
+
+    @RequestMapping("/admin/users")
+    @GetMapping
+    public String Allusers() {
+        UserDao user= new UserDao();
+        return user.findAll().toString();
     }
 
     @RequestMapping("/user/products")
@@ -77,6 +85,8 @@ public class Controller {
     public ArrayList<String> info() {
         ArrayList<String> info = new ArrayList<String>();
         info.add("Команды, которые доступны без авторизации:");
+        info.add("Авторизоваться: http://localhost:8089/login");
+        info.add("Выйти из аккаунта, если в него был вход; потом можно переавторизоваться: http://localhost:8089/logout");
         info.add("Вывод всех магазинов из базы данных: http://localhost:8089/store");
         info.add("Вывод информации о магазине из базы данных по id: http://localhost:8089/store/{id}");
 
@@ -91,6 +101,7 @@ public class Controller {
         info.add("Команды, доступные админу:");
         info.add("Узнать, есть ли доступ к командам админа: http://localhost:8089/admin");
         info.add("Вывод всех клиентов из базы данных: http://localhost:8089/admin/client");
+        info.add("Вывод данных всех пользователей (логины и пароли): http://localhost:8089/admin/users");
         info.add("Сохранить новый магазин в базу данных по названию: http://localhost:8089/admin/store/save/{name}");
         info.add("Удалить существующий магазин в базе данных по id: http://localhost:8089/admin/store/delete/{id}");
         info.add("Обновить название существующего магазина в базе данных по id: http://localhost:8089/admin/store/update/{id}/{name}");

@@ -1,5 +1,6 @@
 package myapp.Security;
 
+import dao.UserDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-
+        UserDao userDao= new UserDao();
         auth.inMemoryAuthentication()
                 .withUser("user")
                 .password("user")
@@ -28,6 +29,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .withUser("admin")
                 .password("admin")
                 .authorities("ROLE_ADMIN");
+        for (int i=0;i<userDao.findAll().size();i++){
+            auth.inMemoryAuthentication().withUser(userDao.findAll().get(i).GetUser_username()).password(userDao.findAll().get(i).GetUser_password()).authorities("ROLE_USER");
+        }
     }
 
     @Override
