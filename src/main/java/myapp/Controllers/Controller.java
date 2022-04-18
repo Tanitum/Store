@@ -6,6 +6,8 @@ import dao.StoreDao;
 import model.Store;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 public class Controller {
     @RequestMapping("/store")
@@ -15,14 +17,14 @@ public class Controller {
         return store.findAll().toString();
     }
 
-    @RequestMapping("/client")
+    @RequestMapping("/admin/client")
     @GetMapping
     public String Allclients() {
         ClientDao client= new ClientDao();
         return client.findAll().toString();
     }
 
-    @RequestMapping("/products")
+    @RequestMapping("/user/products")
     @GetMapping
     public String Allproducts() {
         ProductsDao products= new ProductsDao();
@@ -36,7 +38,7 @@ public class Controller {
         return store.findStoreById(id).toString();
     }
 
-    @RequestMapping("/store/save/{name}")
+    @RequestMapping("/admin/store/save/{name}")
     @PostMapping
     public String SaveStore(@PathVariable("name") String name) {
         StoreDao storeDao= new StoreDao();
@@ -45,7 +47,7 @@ public class Controller {
         return "Магазин создан. Вот информация о нём: "+ store.toString();
     }
 
-    @RequestMapping("/store/delete/{id}")
+    @RequestMapping("/admin/store/delete/{id}")
     @PostMapping
     public String DeleteStoreById(@PathVariable("id") int id) {
         StoreDao storeDao= new StoreDao();
@@ -53,7 +55,7 @@ public class Controller {
         return "Магазин был удалён. У него был id: " + id;
     }
 
-    @RequestMapping("/store/update/{id}/{name}")
+    @RequestMapping("/admin/store/update/{id}/{name}")
     @PostMapping
     public String UpdateStoreById(@PathVariable("id") int id, @PathVariable("name") String name) {
         StoreDao storeDao= new StoreDao();
@@ -61,5 +63,37 @@ public class Controller {
         Store newstore =new Store(id,name);
         storeDao.update(newstore);
         return "Название магазина было обновлено. Раньше он был в базе данных: " + store.toString()+ ". Теперь он стал: "+newstore.toString();
+    }
+
+    @GetMapping("/user")
+    public String user() {
+        return "У вас есть доступ к командам пользователя.";
+    }
+    @GetMapping("/admin")
+    public String admin() {
+        return "У вас есть доступ к командам админа.";
+    }
+    @GetMapping("/")
+    public ArrayList<String> info() {
+        ArrayList<String> info = new ArrayList<String>();
+        info.add("Команды, которые доступны без авторизации:");
+        info.add("Вывод всех магазинов из базы данных: http://localhost:8089/store");
+        info.add("Вывод информации о магазине из базы данных по id: http://localhost:8089/store/{id}");
+
+        info.add("                                                                                                                                                                                                                                                    ");
+        info.add("                                                                                                                                                                                                                                                    ");
+        info.add("Команды, доступные пользователю и админу:");
+        info.add("Узнать, есть ли доступ к командам пользователя: http://localhost:8089/user");
+        info.add("Вывод информации обо всех продуктах из базы данных: http://localhost:8089/user/products");
+
+        info.add("                                                                                                                                                                                                                                                    ");
+        info.add("                                                                                                                                                                                                                                                    ");
+        info.add("Команды, доступные админу:");
+        info.add("Узнать, есть ли доступ к командам админа: http://localhost:8089/admin");
+        info.add("Вывод всех клиентов из базы данных: http://localhost:8089/admin/client");
+        info.add("Сохранить новый магазин в базу данных по названию: http://localhost:8089/admin/store/save/{name}");
+        info.add("Удалить существующий магазин в базе данных по id: http://localhost:8089/admin/store/delete/{id}");
+        info.add("Обновить название существующего магазина в базе данных по id: http://localhost:8089/admin/store/update/{id}/{name}");
+        return info;
     }
 }
