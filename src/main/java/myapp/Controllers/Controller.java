@@ -1,9 +1,7 @@
 package myapp.Controllers;
 
-import dao.ClientDao;
-import dao.ProductsDao;
-import dao.StoreDao;
-import dao.UserDao;
+import dao.*;
+import model.Client;
 import model.Store;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +30,13 @@ public class Controller {
         return user.findAll().toString();
     }
 
+    @RequestMapping("/admin/seller")
+    @GetMapping
+    public String Allsellers() {
+        SellerDao seller= new SellerDao();
+        return seller.findAll().toString();
+    }
+
     @RequestMapping("/user/products")
     @GetMapping
     public String Allproducts() {
@@ -53,6 +58,15 @@ public class Controller {
         Store store=new Store(name);
         storeDao.save(store);
         return "Магазин создан. Вот информация о нём: "+ store.toString();
+    }
+
+    @RequestMapping("/admin/client/save/{name}/{surname}")
+    @PostMapping
+    public String SaveClient(@PathVariable("name") String name, @PathVariable("surname") String surname) {
+        ClientDao clientDao= new ClientDao();
+        Client client=new Client(name,surname);
+        clientDao.save(client);
+        return "Человек добавлен в базу данных. Вот информация о нём: "+ client.toString();
     }
 
     @RequestMapping("/admin/store/delete/{id}")
@@ -77,6 +91,10 @@ public class Controller {
     public String user() {
         return "У вас есть доступ к командам пользователя.";
     }
+    @GetMapping("/seller")
+    public String seller() {
+        return "У вас есть доступ к командам продавца.";
+    }
     @GetMapping("/admin")
     public String admin() {
         return "У вас есть доступ к командам админа.";
@@ -96,12 +114,20 @@ public class Controller {
         info.add("Узнать, есть ли доступ к командам пользователя: http://localhost:8089/user");
         info.add("Вывод информации обо всех продуктах из базы данных: http://localhost:8089/user/products");
 
+
+        info.add("                                                                                                                                                                                                                                                    ");
+        info.add("                                                                                                                                                                                                                                                    ");
+        info.add("Команды, доступные пользователю и продавцу:");
+        info.add("Узнать, есть ли доступ к командам продавца: http://localhost:8089/seller");
+
         info.add("                                                                                                                                                                                                                                                    ");
         info.add("                                                                                                                                                                                                                                                    ");
         info.add("Команды, доступные админу:");
         info.add("Узнать, есть ли доступ к командам админа: http://localhost:8089/admin");
         info.add("Вывод всех клиентов из базы данных: http://localhost:8089/admin/client");
+        info.add("Вывод всех продавцов из базы данных (с логинами и паролями): http://localhost:8089/admin/seller");
         info.add("Вывод данных всех пользователей (логины и пароли): http://localhost:8089/admin/users");
+        info.add("Сохранить нового человека в базу данных по имени и фамилии: http://localhost:8089/admin/client/save/{name}/{surname}");
         info.add("Сохранить новый магазин в базу данных по названию: http://localhost:8089/admin/store/save/{name}");
         info.add("Удалить существующий магазин в базе данных по id: http://localhost:8089/admin/store/delete/{id}");
         info.add("Обновить название существующего магазина в базе данных по id: http://localhost:8089/admin/store/update/{id}/{name}");
