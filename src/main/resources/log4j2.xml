@@ -13,8 +13,8 @@
                 </pattern>
             </PatternLayout>
             <Policies>
-                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
-                <SizeBasedTriggeringPolicy size="10MB" />
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
             </Policies>
             <!-- Max 10 files will be created everyday -->
             <DefaultRolloverStrategy max="10">
@@ -23,7 +23,7 @@
     </Appenders>
     <Loggers>
         <Root level="info" additivity="false">
-            <appender-ref ref="fileLogger" />
+            <appender-ref ref="fileLogger"/>
         </Root>
     </Loggers>
 </Configuration>

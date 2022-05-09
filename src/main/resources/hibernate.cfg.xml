@@ -17,6 +17,8 @@
         <mapping class="model.Client"/>
         <mapping class="model.Products"/>
         <mapping class="model.ProductsOrder"/>
+        <mapping class="model.Seller"/>
+        <mapping class="model.User"/>
 
     </session-factory>
 
