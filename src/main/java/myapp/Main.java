@@ -2,6 +2,8 @@ package myapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,6 +12,7 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.List;
 
+@EnableScheduling
 @SpringBootApplication
 public class Main {
     public static void main(String[] args) {

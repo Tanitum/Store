@@ -38,4 +38,20 @@ public class Products {
         return id + ";" + storeid + ";" + name + ";" + price;
     }
 
+    public int GetId() {
+        return id;
+    }
+
+    public int GetStoreId() {
+        return storeid;
+    }
+
+    public String GetName() {
+        return name;
+    }
+
+    public double GetPrice() {
+        return price;
+    }
+
 }
