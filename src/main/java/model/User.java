@@ -1,5 +1,7 @@
 package model;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import javax.persistence.*;
 
 @Entity
@@ -17,37 +19,39 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    public int GetUser_id ()
-    {
+    public int GetUser_id() {
         return id;
     }
-    public String GetUser_username ()
-    {
+
+    public String GetUser_username() {
         return username;
     }
-    public String GetUser_password ()
-    {
+
+    public String GetUser_password() {
         return password;
     }
 
-    public User(int clientid, String username, String password){
-        this.clientid=clientid;
-        this.username=username;
-        this.password=password;
+    public User(int clientid, String username, String password) {
+        this.clientid = clientid;
+        this.username = username;
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        this.password = passwordEncoder.encode(password);
     }
-    public User(int id, int clientid, String username,String password){
-        this.id=id;
-        this.clientid=clientid;
-        this.username=username;
-        this.password=password;
+
+    public User(int id, int clientid, String username, String password) {
+        this.id = id;
+        this.clientid = clientid;
+        this.username = username;
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        this.password = passwordEncoder.encode(password);
     }
 
     public User() {
     }
 
     @Override
-    public String toString(){
-        return id+ ";"+clientid+ ";"+username+ ";"+password;
+    public String toString() {
+        return id + ";" + clientid + ";" + username;
     }
 
 }

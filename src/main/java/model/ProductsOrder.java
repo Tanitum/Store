@@ -18,24 +18,25 @@ public class ProductsOrder {
     @Column(name = "quantity")
     private int quantity;
 
-    public ProductsOrder(int productid,int orderid,int quantity){
-        this.productid=productid;
-        this.orderid=orderid;
-        this.quantity=quantity;
+    public ProductsOrder(int productid, int orderid, int quantity) {
+        this.productid = productid;
+        this.orderid = orderid;
+        this.quantity = quantity;
     }
-    public ProductsOrder(int id, int productid, int orderid,int quantity){
-        this.id=id;
-        this.productid=productid;
-        this.orderid=orderid;
-        this.quantity=quantity;
+
+    public ProductsOrder(int id, int productid, int orderid, int quantity) {
+        this.id = id;
+        this.productid = productid;
+        this.orderid = orderid;
+        this.quantity = quantity;
     }
 
     public ProductsOrder() {
     }
 
     @Override
-    public String toString(){
-        return id+ ";"+productid+ ";"+orderid+ ";"+quantity;
+    public String toString() {
+        return id + ";" + productid + ";" + orderid + ";" + quantity;
     }
 
 }

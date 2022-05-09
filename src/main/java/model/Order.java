@@ -18,24 +18,25 @@ public class Order {
     @Column(name = "orderdate")
     private String orderdate;
 
-    public Order(int number, String status, String orderdate){
-        this.number=number;
-        this.status=status;
-        this.orderdate=orderdate;
+    public Order(int number, String status, String orderdate) {
+        this.number = number;
+        this.status = status;
+        this.orderdate = orderdate;
     }
-    public Order(int id, int number, String status, String orderdate){
-        this.id=id;
-        this.number=number;
-        this.status=status;
-        this.orderdate=orderdate;
+
+    public Order(int id, int number, String status, String orderdate) {
+        this.id = id;
+        this.number = number;
+        this.status = status;
+        this.orderdate = orderdate;
     }
 
     public Order() {
     }
 
     @Override
-    public String toString(){
-        return id+ ";"+number+ ";"+status+ ";"+orderdate;
+    public String toString() {
+        return id + ";" + number + ";" + status + ";" + orderdate;
     }
 
 }

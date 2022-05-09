@@ -1,23 +1,23 @@
 <?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE hibernate-configuration PUBLIC
-    "-//Hibernate/Hibernate Configuration DTD//EN"
-    "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+        "-//Hibernate/Hibernate Configuration DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
-  <session-factory>
-    <property name="connection.url">jdbc:sqlite:storage.sqlite</property>
-    <property name="connection.driver_class">org.sqlite.JDBC</property>
-    <property name="hibernate.dialect">org.sqlite.hibernate.dialect.SQLiteDialect</property>
-    <property name="current_session_context_class">thread</property>
+    <session-factory>
+        <property name="connection.url">jdbc:sqlite:storage.sqlite</property>
+        <property name="connection.driver_class">org.sqlite.JDBC</property>
+        <property name="hibernate.dialect">org.sqlite.hibernate.dialect.SQLiteDialect</property>
+        <property name="current_session_context_class">thread</property>
 
-    <!--Вывод команд, с которыми hibernate обращается к бд: <property name="hibernate.show_sql">true</property> -->
-    <property name="hibernate.format_sql">true</property>
+        <!--Вывод команд, с которыми hibernate обращается к бд: <property name="hibernate.show_sql">true</property> -->
+        <property name="hibernate.format_sql">true</property>
 
-    <mapping class="model.Store"/>
-    <mapping class="model.Order"/>
-    <mapping class="model.Client"/>
-    <mapping class="model.Products"/>
-    <mapping class="model.ProductsOrder"/>
+        <mapping class="model.Store"/>
+        <mapping class="model.Order"/>
+        <mapping class="model.Client"/>
+        <mapping class="model.Products"/>
+        <mapping class="model.ProductsOrder"/>
 
-  </session-factory>
+    </session-factory>
 
 </hibernate-configuration>

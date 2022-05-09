@@ -1,5 +1,7 @@
 package model;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import javax.persistence.*;
 
 @Entity
@@ -17,37 +19,39 @@ public class Seller {
     @Column(name = "password")
     private String password;
 
-    public int GetSeller_id ()
-    {
+    public int GetSeller_id() {
         return id;
     }
-    public String GetSeller_sellername ()
-    {
+
+    public String GetSeller_sellername() {
         return sellername;
     }
-    public String GetSeller_password ()
-    {
+
+    public String GetSeller_password() {
         return password;
     }
 
-    public Seller(int storeid, String sellername, String password){
-        this.storeid=storeid;
-        this.sellername=sellername;
-        this.password=password;
+    public Seller(int storeid, String sellername, String password) {
+        this.storeid = storeid;
+        this.sellername = sellername;
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        this.password = passwordEncoder.encode(password);
     }
-    public Seller(int id, int storeid, String sellername,String password){
-        this.id=id;
-        this.storeid=storeid;
-        this.sellername=sellername;
-        this.password=password;
+
+    public Seller(int id, int storeid, String sellername, String password) {
+        this.id = id;
+        this.storeid = storeid;
+        this.sellername = sellername;
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        this.password = passwordEncoder.encode(password);
     }
 
     public Seller() {
     }
 
     @Override
-    public String toString(){
-        return id+ ";"+storeid+ ";"+sellername+ ";"+password;
+    public String toString() {
+        return id + ";" + storeid + ";" + sellername;
     }
 
 }

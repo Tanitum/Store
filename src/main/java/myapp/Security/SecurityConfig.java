@@ -7,39 +7,39 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
+    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return passwordEncoder;
     }
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        UserDao userDao= new UserDao();
-        SellerDao sellerDao= new SellerDao();
+        UserDao userDao = new UserDao();
+        SellerDao sellerDao = new SellerDao();
         auth.inMemoryAuthentication()
                 .withUser("user")
-                .password("user")
+                .password(passwordEncoder.encode("user"))
                 .authorities("ROLE_USER")
                 .and()
                 .withUser("seller")
-                .password("seller")
+                .password(passwordEncoder.encode("seller"))
                 .authorities("ROLE_SELLER")
                 .and()
                 .withUser("admin")
-                .password("admin")
+                .password(passwordEncoder.encode("admin"))
                 .authorities("ROLE_ADMIN");
 
-        for (int i=0;i<userDao.findAll().size();i++){
+        for (int i = 0; i < userDao.findAll().size(); i++) {
             auth.inMemoryAuthentication().withUser(userDao.findAll().get(i).GetUser_username()).password(userDao.findAll().get(i).GetUser_password()).authorities("ROLE_USER");
         }
-        for (int j=0;j<sellerDao.findAll().size();j++){
+        for (int j = 0; j < sellerDao.findAll().size(); j++) {
             auth.inMemoryAuthentication().withUser(sellerDao.findAll().get(j).GetSeller_sellername()).password(sellerDao.findAll().get(j).GetSeller_password()).authorities("ROLE_SELLER");
         }
     }
