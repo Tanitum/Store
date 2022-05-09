@@ -71,3 +71,4 @@ fabric.properties
 /target/
 /target/classes/
 /lib/
+/logs/
