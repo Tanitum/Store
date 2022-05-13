@@ -5,6 +5,8 @@ import model.Client;
 import model.Seller;
 import model.Store;
 import model.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -39,11 +41,34 @@ public class Controller {
         return sellerDao.findAll().toString();
     }
 
+    @RequestMapping("/seller/info")
+    @GetMapping
+    public String GetSellerInfo() {
+        SellerDao sellerDao = new SellerDao();
+        return sellerDao.findSellerBySellername(GetLoginname()).toString();
+    }
+
+    @RequestMapping("/user/info")
+    @GetMapping
+    public String GetUserInfo() {
+        UserDao userDao = new UserDao();
+        return userDao.findUserByusername(GetLoginname()).toString();
+    }
+
     @RequestMapping("/user/products")
     @GetMapping
     public String Allproducts() {
         ProductsDao productsDao = new ProductsDao();
         return productsDao.findAll().toString();
+    }
+
+    @RequestMapping("/user/products/{store_name}")
+    @GetMapping
+    public String AllproductsOfStore(@PathVariable("store_name") String store_name) {
+        StoreDao storeDao = new StoreDao();
+        int storeid = storeDao.findStoreByName(store_name).GetId();
+        ProductsDao productsDao = new ProductsDao();
+        return productsDao.findProductsByStoreId(storeid).toString();
     }
 
     @RequestMapping("/store/{id}")
@@ -137,6 +162,13 @@ public class Controller {
         return "У вас есть доступ к командам продавца.";
     }
 
+    @RequestMapping("/loginname")
+    @GetMapping
+    public String GetLoginname() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getName();
+    }
+
     @GetMapping("/admin")
     public String admin() {
         return "У вас есть доступ к командам админа.";
@@ -147,6 +179,7 @@ public class Controller {
         ArrayList<String> info = new ArrayList<String>();
         info.add("Команды, которые доступны без авторизации:");
         info.add("Авторизоваться: http://localhost:8089/login");
+        info.add("Узнать логин текущего авторизованного пользователя: http://localhost:8089/loginname");
         info.add("Выйти из аккаунта, если в него был вход; потом можно переавторизоваться: http://localhost:8089/logout");
         info.add("Вывод всех магазинов из базы данных: http://localhost:8089/store");
         info.add("Вывод информации о магазине из базы данных по id: http://localhost:8089/store/{id}");
@@ -156,12 +189,15 @@ public class Controller {
         info.add("Команды, доступные пользователю и админу:");
         info.add("Узнать, есть ли доступ к командам пользователя: http://localhost:8089/user");
         info.add("Вывод информации обо всех продуктах из базы данных: http://localhost:8089/user/products");
+        info.add("Вывод информации обо всех продуктах в данном магазине: http://localhost:8089/user/products/{store_name}");
+        info.add("Вывод информации об авторизованном пользователе (если его username не admin и не user) из базы данных: http://localhost:8089/user/info");
 
 
         info.add("                                                                                                                                                                                                                                                    ");
         info.add("                                                                                                                                                                                                                                                    ");
-        info.add("Команды, доступные пользователю и продавцу:");
+        info.add("Команды, доступные продавцу и админу:");
         info.add("Узнать, есть ли доступ к командам продавца: http://localhost:8089/seller");
+        info.add("Вывод информации об авторизованном продавце (если его sellername не admin и не seller) из базы данных: http://localhost:8089/seller/info");
 
         info.add("                                                                                                                                                                                                                                                    ");
         info.add("                                                                                                                                                                                                                                                    ");

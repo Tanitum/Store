@@ -29,4 +29,12 @@ public class Store {
         return id + ";" + name;
     }
 
+    public int GetId() {
+        return id;
+    }
+
+    public String GetName() {
+        return name;
+    }
+
 }

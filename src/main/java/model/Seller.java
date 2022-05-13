@@ -54,4 +54,8 @@ public class Seller {
         return id + ";" + storeid + ";" + sellername;
     }
 
+    public int GetStoreId() {
+        return storeid;
+    }
+
 }

@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import utils.HibernateSessionFactoryUtil;
 
+import javax.persistence.Query;
 import java.util.List;
 
 public class StoreDao {
@@ -16,6 +17,13 @@ public class StoreDao {
 
     public model.Store findStoreById(int id) {
         return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(model.Store.class, id);
+    }
+
+    public Store findStoreByName(String name) {
+        Query query = HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("from Store where name=:name");
+        query.setParameter("name", name);
+        Store store = (Store) ((org.hibernate.query.Query<?>) query).uniqueResult();
+        return store;
     }
 
     public void save(model.Store store) {

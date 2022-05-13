@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import utils.HibernateSessionFactoryUtil;
 
+import javax.persistence.Query;
 import java.util.List;
 
 public class UserDao {
@@ -16,6 +17,13 @@ public class UserDao {
 
     public model.User findUserById(int id) {
         return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(model.User.class, id);
+    }
+
+    public User findUserByusername(String username) {
+        Query query = HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("from User where username=:username");
+        query.setParameter("username", username);
+        User user = (User) ((org.hibernate.query.Query<?>) query).uniqueResult();
+        return user;
     }
 
     public void save(model.User user) {
