@@ -25,6 +25,13 @@ Maven cгенерирует исполняемый jar-файл с именем 
 3) Для окончания использования localhost:8089 нужно остановить класс main в первом способе, остановить процесс Java(TM)
    Platform SE binary во втором способе.
 
+Генерация Javadoc (2 способа):
+
+1) Запустить команду mvn javadoc:javadoc, в папке target/site/apidocs запустить index.html.
+2) Запустить команду mvn clean package, генерируется весь проект и jar файлы, в том числе Store-1.0-javadoc.jar, в папке
+   target/apidocs запустить index.html.
+
+
 Узнать информацию обо всех доступных командах: http://localhost:8089/
 
 http://localhost:8089/... - команды, которые доступны всем без авторизации
