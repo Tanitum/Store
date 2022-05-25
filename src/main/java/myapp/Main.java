@@ -3,6 +3,7 @@ package myapp;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @EnableScheduling
 @SpringBootApplication
+@EnableSwagger2
 public class Main {
     public static void main(String[] args) {
         String database_name = "storage.sqlite";

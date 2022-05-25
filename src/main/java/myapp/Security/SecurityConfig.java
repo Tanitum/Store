@@ -52,5 +52,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/**").permitAll()
                 .and().formLogin();
+        http.csrf().disable().cors().and().authorizeRequests().anyRequest().permitAll(); //Allow access to all endpoints
     }
 }

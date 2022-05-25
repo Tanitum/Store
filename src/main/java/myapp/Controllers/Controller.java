@@ -13,57 +13,50 @@ import java.util.ArrayList;
 
 @RestController
 public class Controller {
-    @RequestMapping("/store")
-    @GetMapping
+
+    @GetMapping("/store")
     public String Allstores() {
         StoreDao storeDao = new StoreDao();
         return storeDao.findAll().toString();
     }
 
-    @RequestMapping("/admin/client")
-    @GetMapping
+    @GetMapping("/admin/client")
     public String Allclients() {
         ClientDao clientDao = new ClientDao();
         return clientDao.findAll().toString();
     }
 
-    @RequestMapping("/admin/users")
-    @GetMapping
+    @GetMapping("/admin/users")
     public String Allusers() {
         UserDao userDao = new UserDao();
         return userDao.findAll().toString();
     }
 
-    @RequestMapping("/admin/sellers")
-    @GetMapping
+    @GetMapping("/admin/sellers")
     public String Allsellers() {
         SellerDao sellerDao = new SellerDao();
         return sellerDao.findAll().toString();
     }
 
-    @RequestMapping("/seller/info")
-    @GetMapping
+    @GetMapping("/seller/info")
     public String GetSellerInfo() {
         SellerDao sellerDao = new SellerDao();
         return sellerDao.findSellerBySellername(GetLoginname()).toString();
     }
 
-    @RequestMapping("/user/info")
-    @GetMapping
+    @GetMapping("/user/info")
     public String GetUserInfo() {
         UserDao userDao = new UserDao();
         return userDao.findUserByusername(GetLoginname()).toString();
     }
 
-    @RequestMapping("/user/products")
-    @GetMapping
+    @GetMapping("/user/products")
     public String Allproducts() {
         ProductsDao productsDao = new ProductsDao();
         return productsDao.findAll().toString();
     }
 
-    @RequestMapping("/user/products/{store_name}")
-    @GetMapping
+    @GetMapping("/user/products/{store_name}")
     public String AllproductsOfStore(@PathVariable("store_name") String store_name) {
         StoreDao storeDao = new StoreDao();
         int storeid = storeDao.findStoreByName(store_name).GetId();
@@ -71,15 +64,13 @@ public class Controller {
         return productsDao.findProductsByStoreId(storeid).toString();
     }
 
-    @RequestMapping("/store/{id}")
-    @GetMapping
+    @GetMapping("/store/{id}")
     public String GetStoreById(@PathVariable("id") int id) {
         StoreDao storeDao = new StoreDao();
         return storeDao.findStoreById(id).toString();
     }
 
-    @RequestMapping("/admin/store/save/{name}")
-    @PostMapping
+    @PutMapping("/admin/store/save/{name}")
     public String SaveStore(@PathVariable("name") String name) {
         StoreDao storeDao = new StoreDao();
         Store store = new Store(name);
@@ -87,8 +78,7 @@ public class Controller {
         return "Магазин создан. Вот информация о нём: " + store.toString();
     }
 
-    @RequestMapping("/admin/client/save/{name}/{surname}")
-    @PostMapping
+    @PutMapping("/admin/client/save/{name}/{surname}")
     public String SaveClient(@PathVariable("name") String name, @PathVariable("surname") String surname) {
         ClientDao clientDao = new ClientDao();
         Client client = new Client(name, surname);
@@ -96,8 +86,7 @@ public class Controller {
         return "Человек добавлен в базу данных. Вот информация о нём: " + client.toString();
     }
 
-    @RequestMapping("/admin/user/save/{clientid}/{username}/{password}")
-    @PostMapping
+    @PutMapping("/admin/user/save/{clientid}/{username}/{password}")
     public String SaveUser(@PathVariable("clientid") int clientid, @PathVariable("username") String username, @PathVariable("password") String password) {
         UserDao userDao = new UserDao();
         User user = new User(clientid, username, password);
@@ -105,8 +94,7 @@ public class Controller {
         return "Пользователь добавлен в базу данных. Вот информация о нём: " + user.toString() + " Авторизация данного человека возможна только после полного перезапуска программы.";
     }
 
-    @RequestMapping("/admin/seller/save/{storeid}/{sellername}/{password}")
-    @PostMapping
+    @PutMapping("/admin/seller/save/{storeid}/{sellername}/{password}")
     public String SaveSeller(@PathVariable("storeid") int storeid, @PathVariable("sellername") String sellername, @PathVariable("password") String password) {
         SellerDao sellerDao = new SellerDao();
         Seller seller = new Seller(storeid, sellername, password);
@@ -114,16 +102,14 @@ public class Controller {
         return "Продавец добавлен в базу данных. Вот информация о нём: " + seller.toString() + " Авторизация данного человека возможна только после полного перезапуска программы.";
     }
 
-    @RequestMapping("/admin/store/delete/{id}")
-    @PostMapping
+    @DeleteMapping("/admin/store/delete/{id}")
     public String DeleteStoreById(@PathVariable("id") int id) {
         StoreDao storeDao = new StoreDao();
         storeDao.delete(storeDao.findStoreById(id));
         return "Магазин был удалён. У него был id: " + id;
     }
 
-    @RequestMapping("/admin/store/update/{id}/{name}")
-    @PostMapping
+    @PatchMapping("/admin/store/update/{id}/{name}")
     public String UpdateStoreById(@PathVariable("id") int id, @PathVariable("name") String name) {
         StoreDao storeDao = new StoreDao();
         Store store = storeDao.findStoreById(id);
@@ -132,8 +118,7 @@ public class Controller {
         return "Название магазина было обновлено. Раньше он был в базе данных: " + store.toString() + ". Теперь он стал: " + newstore.toString();
     }
 
-    @RequestMapping("/admin/user/update/{id}/{clientid}/{username}/{password}")
-    @PostMapping
+    @PatchMapping("/admin/user/update/{id}/{clientid}/{username}/{password}")
     public String UpdateUser(@PathVariable("id") int id, @PathVariable("clientid") int clientid, @PathVariable("username") String username, @PathVariable("password") String password) {
         UserDao userDao = new UserDao();
         User user = userDao.findUserById(id);
@@ -142,8 +127,7 @@ public class Controller {
         return "Данные пользователя были обновлены. Раньше он был в базе данных: " + user.toString() + ". Теперь он стал: " + newuser.toString() + " Авторизация данного человека возможна только после полного перезапуска программы.";
     }
 
-    @RequestMapping("/admin/seller/update/{id}/{storeid}/{sellername}/{password}")
-    @PostMapping
+    @PatchMapping("/admin/seller/update/{id}/{storeid}/{sellername}/{password}")
     public String UpdateSeller(@PathVariable("id") int id, @PathVariable("storeid") int storeid, @PathVariable("sellername") String sellername, @PathVariable("password") String password) {
         SellerDao sellerDao = new SellerDao();
         Seller seller = sellerDao.findSellerById(id);
@@ -162,8 +146,7 @@ public class Controller {
         return "У вас есть доступ к командам продавца.";
     }
 
-    @RequestMapping("/loginname")
-    @GetMapping
+    @GetMapping("/loginname")
     public String GetLoginname() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getName();
