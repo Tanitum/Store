@@ -3,6 +3,8 @@ VALUES (1, 'Petr', 'Petrov');
 INSERT INTO client (id, name, surname)
 VALUES (2, 'Ivan', 'Ivanov');
 INSERT INTO client (id, name, surname)
+VALUES (3, 'Angelina', 'Evans');
+INSERT INTO client (id, name, surname)
 VALUES (4, 'Anna', 'Sokolova');
 INSERT INTO client (id, name, surname)
 VALUES (5, 'Maria', 'Smirnova');
@@ -10,12 +12,12 @@ INSERT INTO client (id, name, surname)
 VALUES (6, 'Alex', 'Allford');
 INSERT INTO client (id, name, surname)
 VALUES (7, 'Alexandra', 'Allford');
-INSERT INTO clientorder (id, number, status, orderdate)
-VALUES (1, 14381, 'Сompleted', '12.04.2022');
-INSERT INTO clientorder (id, number, status, orderdate)
-VALUES (2, 12345, 'Completed', '01.02.2022');
-INSERT INTO clientorder (id, number, status, orderdate)
-VALUES (3, 12872, 'Сompleted', '11.04.2022');
+INSERT INTO clientorder (id, clientid, number, status, orderdate)
+VALUES (1, 1, 14381, 'Сompleted', '12.04.2022');
+INSERT INTO clientorder (id, clientid, number, status, orderdate)
+VALUES (2, 2, 12345, 'Completed', '01.02.2022');
+INSERT INTO clientorder (id, clientid, number, status, orderdate)
+VALUES (3, 3, 12872, 'Сompleted', '11.04.2022');
 INSERT INTO products (id, name, price, storeid)
 VALUES (1, 'Butter', 140, 1);
 INSERT INTO products (id, name, price, storeid)
@@ -28,6 +30,10 @@ INSERT INTO productsorder (id, productid, orderid, quantity)
 VALUES (1, 2, 2, 10);
 INSERT INTO productsorder (id, productid, orderid, quantity)
 VALUES (3, 2, 3, 15);
+INSERT INTO productsorder (id, productid, orderid, quantity)
+VALUES (4, 1, 2, 20);
+INSERT INTO productsorder (id, productid, orderid, quantity)
+VALUES (5, 4, 1, 5);
 INSERT INTO seller (id, storeid, sellername, password)
 VALUES (1, 1, 'John-seller', '$2a$10$ATsozapL8Dl/FMz/Y0g4dec6gA3cxr0mYY9rv1qdbwwIndBsE3W4e');
 INSERT INTO seller (id, storeid, sellername, password)
@@ -70,3 +76,5 @@ INSERT INTO user (id, clientid, username, password)
 VALUES (5, 6, 'XXX', '$2a$10$xn8MGPykiIF0ZwdNUBvJSOf3Aay6xx.wodFPrxD9j8veW11h/6V7W');
 INSERT INTO user (id, clientid, username, password)
 VALUES (6, 7, 'YYY', '$2a$10$blgJv8VVp/vM3jcMdcx8C.XAtYF.qIUh0kre8F7jQFCSezBhUCFni');
+INSERT INTO user (id, clientid, username, password)
+VALUES (7, 3, 'Evangel', '$2a$10$YS12S5kl/3CEFsbhSRyvj.TusuVL9ipsS74kgc2/4238cbxNG67.W');

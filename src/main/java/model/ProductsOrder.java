@@ -39,4 +39,20 @@ public class ProductsOrder {
         return id + ";" + productid + ";" + orderid + ";" + quantity;
     }
 
+    public int GetID() {
+        return id;
+    }
+
+    public int GetProductId() {
+        return productid;
+    }
+
+    public int GetOrderId() {
+        return orderid;
+    }
+
+    public int GetQuantity() {
+        return quantity;
+    }
+
 }

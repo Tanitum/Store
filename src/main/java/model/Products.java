@@ -54,4 +54,7 @@ public class Products {
         return price;
     }
 
+    public String GetProductInfoForSeller() {
+        return id + ";" + name + ";" + price;
+    }
 }

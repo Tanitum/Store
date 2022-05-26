@@ -15,6 +15,8 @@ create table clientorder
     id        integer not null
         constraint order_pk
             primary key autoincrement,
+    clientid  integer not null
+        references client,
     number    integer not null,
     status    text    not null,
     orderdate text    not null

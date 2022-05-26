@@ -33,4 +33,8 @@ public class Client {
         return id + ";" + name + ";" + surname;
     }
 
+    public String GetClientInfoForSeller() {
+        return name + ";" + surname;
+    }
+
 }

@@ -1,15 +1,13 @@
 package myapp.Controllers;
 
 import dao.*;
-import model.Client;
-import model.Seller;
-import model.Store;
-import model.User;
+import model.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class Controller {
@@ -44,6 +42,115 @@ public class Controller {
         return sellerDao.findSellerBySellername(GetLoginname()).toString();
     }
 
+    @GetMapping("/seller/products")
+    public List<String> GetProductsOfSellerStore() {
+        SellerDao sellerDao = new SellerDao();
+        int storeid = sellerDao.findSellerBySellername(GetLoginname()).GetStoreId();
+        ProductsDao productsDao = new ProductsDao();
+        List<Products> Products = productsDao.findProductsByStoreId(storeid);
+        List<String> ProductsStr = new ArrayList<>();
+        for (int i = 0; i < Products.size(); i++) {
+            ProductsStr.add(Products.get(i).GetProductInfoForSeller());
+        }
+        return ProductsStr;
+    }
+
+    @GetMapping("/seller/orders")
+    public List<Integer> GetAllOrdersOFSellerStore() {
+        SellerDao sellerDao = new SellerDao();
+        OrderDao orderDao = new OrderDao();
+        int storeid = sellerDao.findSellerBySellername(GetLoginname()).GetStoreId();
+        ProductsDao productsDao = new ProductsDao();
+        List<Products> Products = productsDao.findProductsByStoreId(storeid);
+        ProductsOrderDao productsOrderDao = new ProductsOrderDao();
+        List<ProductsOrder> ProductsOrder = productsOrderDao.findAll();
+        List<Integer> Orders = new ArrayList<>();
+        for (int i = 0; i < ProductsOrder.size(); i++) {
+            for (int j = 0; j < Products.size(); j++) {
+                if (ProductsOrder.get(i).GetProductId() == Products.get(j).GetId()) {
+                    int k = 0;
+                    Order order = orderDao.findOrderById(ProductsOrder.get(i).GetOrderId());
+                    for (int l = 0; l < Orders.size(); l++) {
+                        if (Orders.get(l) == order.GetNumber()) {
+                            k = 1;
+                        }
+                    }
+                    if (k == 0) {
+                        Orders.add(order.GetNumber());
+                    }
+                }
+            }
+        }
+        return Orders;
+    }
+
+    @GetMapping("/seller/order/{order_number}")
+    public String OrderInfoByNumber(@PathVariable("order_number") Integer order_number) {
+        OrderDao orderDao = new OrderDao();
+        List<Integer> orders = GetAllOrdersOFSellerStore();
+        for (int i = 0; i < orders.size(); i++) {
+            if (orders.get(i).equals(order_number)) {
+                return orderDao.findOrderByNumber(order_number).GetOrderInfoForSeller();
+            }
+        }
+        return "Это заказ не из магазина авторизированного продавца или заказа нет в базе данных.";
+    }
+
+    @PatchMapping("/seller/orderstatus/{order_number}/{order_status}")
+    public String ChangeOrderStatus(@PathVariable("order_number") Integer order_number, @PathVariable("order_status") String order_status) {
+        OrderDao orderDao = new OrderDao();
+        List<Integer> orders = GetAllOrdersOFSellerStore();
+        for (int i = 0; i < orders.size(); i++) {
+            if (orders.get(i).equals(order_number)) {
+                Order order = orderDao.findOrderByNumber(order_number);
+                Order neworder = new Order(order.GetId(), order.GetClientId(), order_number, order_status, order.GetOrderdate());
+                orderDao.update(neworder);
+                return "Статус заказа номер " + order_number + " был обновлен. Раньше был статус в базе данных: " + order.GetStatus() + ". Теперь он стал: " + neworder.GetStatus();
+            }
+        }
+        return "Это заказ не из магазина авторизированного продавца или заказа нет в базе данных. Статус не изменён.";
+    }
+
+    @GetMapping("/seller/clientbyorder/{order_number}")
+    public String ClientInfoByOrderNumber(@PathVariable("order_number") Integer order_number) {
+        OrderDao orderDao = new OrderDao();
+        List<Integer> orders = GetAllOrdersOFSellerStore();
+        for (int i = 0; i < orders.size(); i++) {
+            if (orders.get(i).equals(order_number)) {
+                ClientDao clientDao = new ClientDao();
+                return clientDao.findClientById(orderDao.findOrderByNumber(order_number).GetClientId()).GetClientInfoForSeller();
+            }
+        }
+        return "Это заказ не из магазина авторизированного продавца или заказа нет в базе данных. Невозможно узнать информацию о клиенте.";
+    }
+
+    @GetMapping("/seller/orderproducts/{order_number}")
+    public List<String> OrderProductsByNumber(@PathVariable("order_number") Integer order_number) {
+        OrderDao orderDao = new OrderDao();
+        List<Integer> orders = GetAllOrdersOFSellerStore();
+        List<String> OrderProducts = new ArrayList<>();
+        Double totalcost = 0.0;
+        for (int i = 0; i < orders.size(); i++) {
+            if (orders.get(i).equals(order_number)) {
+                int orderid = orderDao.findOrderByNumber(order_number).GetId();
+                ProductsOrderDao productsOrderDao = new ProductsOrderDao();
+                List<ProductsOrder> ProductsOrder = productsOrderDao.findAll();
+                ProductsDao productsDao = new ProductsDao();
+                for (int j = 0; j < ProductsOrder.size(); j++) {
+                    if (ProductsOrder.get(j).GetOrderId() == orderid) {
+                        Products products = productsDao.findProductsById(ProductsOrder.get(j).GetProductId());
+                        totalcost += products.GetPrice() * ProductsOrder.get(j).GetQuantity();
+                        OrderProducts.add(products.GetName() + ";" + products.GetPrice() + ";" + ProductsOrder.get(j).GetQuantity() + ";" + products.GetPrice() * ProductsOrder.get(j).GetQuantity());
+                    }
+                }
+                OrderProducts.add("Итоговая стоимость заказа: " + totalcost.toString());
+                return OrderProducts;
+            }
+        }
+        OrderProducts.add("Это заказ не из магазина авторизированного продавца или заказа нет в базе данных.");
+        return OrderProducts;
+    }
+
     @GetMapping("/user/info")
     public String GetUserInfo() {
         UserDao userDao = new UserDao();
@@ -51,17 +158,28 @@ public class Controller {
     }
 
     @GetMapping("/user/products")
-    public String Allproducts() {
+    public List<String> Allproducts() {
         ProductsDao productsDao = new ProductsDao();
-        return productsDao.findAll().toString();
+        List<Products> Products = productsDao.findAll();
+        List<String> ProductsStr = new ArrayList<>();
+        StoreDao storeDao = new StoreDao();
+        for (int i = 0; i < Products.size(); i++) {
+            ProductsStr.add(storeDao.findStoreById(Products.get(i).GetStoreId()).GetName() + ";" + Products.get(i).GetName() + ";" + Products.get(i).GetPrice());
+        }
+        return ProductsStr;
     }
 
     @GetMapping("/user/products/{store_name}")
-    public String AllproductsOfStore(@PathVariable("store_name") String store_name) {
+    public List<String> AllproductsOfStore(@PathVariable("store_name") String store_name) {
         StoreDao storeDao = new StoreDao();
         int storeid = storeDao.findStoreByName(store_name).GetId();
         ProductsDao productsDao = new ProductsDao();
-        return productsDao.findProductsByStoreId(storeid).toString();
+        List<Products> Products = productsDao.findProductsByStoreId(storeid);
+        List<String> ProductsStr = new ArrayList<>();
+        for (int i = 0; i < Products.size(); i++) {
+            ProductsStr.add(store_name + ";" + Products.get(i).GetName() + ";" + Products.get(i).GetPrice());
+        }
+        return ProductsStr;
     }
 
     @GetMapping("/store/{id}")
@@ -178,9 +296,15 @@ public class Controller {
 
         info.add("                                                                                                                                                                                                                                                    ");
         info.add("                                                                                                                                                                                                                                                    ");
-        info.add("Команды, доступные продавцу и админу:");
+        info.add("Команды, доступные продавцу и иногда админу:");
         info.add("Узнать, есть ли доступ к командам продавца: http://localhost:8089/seller");
         info.add("Вывод информации об авторизованном продавце (если его sellername не admin и не seller) из базы данных: http://localhost:8089/seller/info");
+        info.add("Вывод информации о товарах в магазине продавца (если его sellername не admin и не seller) из базы данных: http://localhost:8089/seller/products");
+        info.add("Вывод номеров всех заказов в магазине продавца (если его sellername не admin и не seller) из базы данных: http://localhost:8089/seller/orders");
+        info.add("Вывод информации о заказе по номеру заказа (если sellername не admin и не seller) из базы данных: http://localhost:8089/seller/orderinfo/{order_number}");
+        info.add("Изменить статус заказа по номеру (если sellername не admin и не seller) из базы данных: http://localhost:8089/seller/orderstatus/{order_number}/{order_status}");
+        info.add("Вывод информации о клиенте по номеру заказа (если sellername не admin и не seller) из базы данных: http://localhost:8089/seller/clientbyorder/{order_number}");
+        info.add("Узнать данные о продуктах в заказе (если sellername не admin и не seller) из базы данных: http://localhost:8089/seller/orderproducts/{order_number}");
 
         info.add("                                                                                                                                                                                                                                                    ");
         info.add("                                                                                                                                                                                                                                                    ");
