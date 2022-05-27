@@ -27,7 +27,7 @@ public class Controller {
 
     @PatchMapping("/admin/setdate/{date}")
     public String SetDate(@PathVariable("date") String date) throws Exception {
-        Date Date= CurrentDate.formater.parse(date);
+        Date Date = CurrentDate.formater.parse(date);
         CurrentDate.Set_current_date(CurrentDate.formater.format(Date));
         return "Установлена новая дата. " + GetDate();
     }
@@ -154,7 +154,7 @@ public class Controller {
                 for (int j = 0; j < ProductsOrder.size(); j++) {
                     if (ProductsOrder.get(j).GetOrderId() == orderid) {
                         Products products = productsDao.findProductsById(ProductsOrder.get(j).GetProductId());
-                        if (products.GetStoreId()==sellerDao.findSellerBySellername(GetLoginname()).GetStoreId()) {
+                        if (products.GetStoreId() == sellerDao.findSellerBySellername(GetLoginname()).GetStoreId()) {
                             totalcost += products.GetPrice() * ProductsOrder.get(j).GetQuantity();
                             OrderProducts.add(products.GetName() + ";" + products.GetPrice() + ";" + ProductsOrder.get(j).GetQuantity() + ";" + products.GetPrice() * ProductsOrder.get(j).GetQuantity());
                         }
@@ -206,7 +206,7 @@ public class Controller {
         int clientid = userDao.findUserByusername(GetLoginname()).GetUserClientId();
         List<Integer> Orders = new ArrayList<>();
         for (int i = 0; i < orderDao.findAll().size(); i++) {
-            if (orderDao.findAll().get(i).GetClientId()==clientid) {
+            if (orderDao.findAll().get(i).GetClientId() == clientid) {
                 Orders.add(orderDao.findAll().get(i).GetNumber());
             }
         }
@@ -245,13 +245,13 @@ public class Controller {
         OrderDao orderDao = new OrderDao();
         UserDao userDao = new UserDao();
         int clientid = userDao.findUserByusername(GetLoginname()).GetUserClientId();
-        Order order = new Order(clientid,order_number, "Created", CurrentDate.Get_current_date());
+        Order order = new Order(clientid, order_number, "Created", CurrentDate.Get_current_date());
         orderDao.save(order);
         return "Исходно пустой заказ создан. Вот информация о нём: " + order.GetOrderInfoForClient();
     }
 
     @PutMapping("/user/product/save/{order_number}/{store_name}/{product_name}/{quantity}")
-    public String AddProductToOrder(@PathVariable("order_number") Integer order_number , @PathVariable("store_name") String store_name, @PathVariable("product_name") String product_name, @PathVariable("quantity") Integer quantity) throws Exception {
+    public String AddProductToOrder(@PathVariable("order_number") Integer order_number, @PathVariable("store_name") String store_name, @PathVariable("product_name") String product_name, @PathVariable("quantity") Integer quantity) throws Exception {
         OrderDao orderDao = new OrderDao();
         ProductsOrderDao productsOrderDao = new ProductsOrderDao();
         ProductsDao productsDao = new ProductsDao();
@@ -263,8 +263,8 @@ public class Controller {
             if (order_number.equals(orders.get(j))) {
                 int orderid = orderDao.findOrderByNumber(order_number).GetId();
                 for (int k = 0; k < Products.size(); k++) {
-                    if(Products.get(k).GetName().equals(product_name) &&  Products.get(k).GetStoreId()==storeDao.findStoreByName(store_name).GetId()){
-                        productid=Products.get(k).GetId();
+                    if (Products.get(k).GetName().equals(product_name) && Products.get(k).GetStoreId() == storeDao.findStoreByName(store_name).GetId()) {
+                        productid = Products.get(k).GetId();
                         ProductsOrder productsOrder = new ProductsOrder(productid, orderid, quantity);
                         productsOrderDao.save(productsOrder);
                         return "Товар добавлен в заказ.";
