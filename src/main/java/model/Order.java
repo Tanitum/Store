@@ -68,4 +68,8 @@ public class Order {
         return id + ";" + number + ";" + status + ";" + orderdate;
     }
 
+    public String GetOrderInfoForClient() {
+        return number + ";" + status + ";" + orderdate;
+    }
+
 }

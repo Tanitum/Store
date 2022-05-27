@@ -2,11 +2,13 @@ package myapp.Controllers;
 
 import dao.*;
 import model.*;
+import myapp.Services.CurrentDate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -16,6 +18,18 @@ public class Controller {
     public String Allstores() {
         StoreDao storeDao = new StoreDao();
         return storeDao.findAll().toString();
+    }
+
+    @GetMapping("/getdate")
+    public String GetDate() throws Exception {
+        return "Текущая дата: " + CurrentDate.Get_current_date();
+    }
+
+    @PatchMapping("/admin/setdate/{date}")
+    public String SetDate(@PathVariable("date") String date) throws Exception {
+        Date Date= CurrentDate.formater.parse(date);
+        CurrentDate.Set_current_date(CurrentDate.formater.format(Date));
+        return "Установлена новая дата. " + GetDate();
     }
 
     @GetMapping("/admin/client")
@@ -56,7 +70,7 @@ public class Controller {
     }
 
     @GetMapping("/seller/orders")
-    public List<Integer> GetAllOrdersOFSellerStore() {
+    public List<Integer> GetAllOrdersOfSellerStore() {
         SellerDao sellerDao = new SellerDao();
         OrderDao orderDao = new OrderDao();
         int storeid = sellerDao.findSellerBySellername(GetLoginname()).GetStoreId();
@@ -87,19 +101,19 @@ public class Controller {
     @GetMapping("/seller/order/{order_number}")
     public String OrderInfoByNumber(@PathVariable("order_number") Integer order_number) {
         OrderDao orderDao = new OrderDao();
-        List<Integer> orders = GetAllOrdersOFSellerStore();
+        List<Integer> orders = GetAllOrdersOfSellerStore();
         for (int i = 0; i < orders.size(); i++) {
             if (orders.get(i).equals(order_number)) {
                 return orderDao.findOrderByNumber(order_number).GetOrderInfoForSeller();
             }
         }
-        return "Это заказ не из магазина авторизированного продавца или заказа нет в базе данных.";
+        return "Это заказ не из магазина авторизированного продавца, или заказа нет в базе данных.";
     }
 
     @PatchMapping("/seller/orderstatus/{order_number}/{order_status}")
     public String ChangeOrderStatus(@PathVariable("order_number") Integer order_number, @PathVariable("order_status") String order_status) {
         OrderDao orderDao = new OrderDao();
-        List<Integer> orders = GetAllOrdersOFSellerStore();
+        List<Integer> orders = GetAllOrdersOfSellerStore();
         for (int i = 0; i < orders.size(); i++) {
             if (orders.get(i).equals(order_number)) {
                 Order order = orderDao.findOrderByNumber(order_number);
@@ -108,46 +122,49 @@ public class Controller {
                 return "Статус заказа номер " + order_number + " был обновлен. Раньше был статус в базе данных: " + order.GetStatus() + ". Теперь он стал: " + neworder.GetStatus();
             }
         }
-        return "Это заказ не из магазина авторизированного продавца или заказа нет в базе данных. Статус не изменён.";
+        return "Это заказ не из магазина авторизированного продавца, или заказа нет в базе данных. Статус не изменён.";
     }
 
     @GetMapping("/seller/clientbyorder/{order_number}")
     public String ClientInfoByOrderNumber(@PathVariable("order_number") Integer order_number) {
         OrderDao orderDao = new OrderDao();
-        List<Integer> orders = GetAllOrdersOFSellerStore();
+        List<Integer> orders = GetAllOrdersOfSellerStore();
         for (int i = 0; i < orders.size(); i++) {
             if (orders.get(i).equals(order_number)) {
                 ClientDao clientDao = new ClientDao();
                 return clientDao.findClientById(orderDao.findOrderByNumber(order_number).GetClientId()).GetClientInfoForSeller();
             }
         }
-        return "Это заказ не из магазина авторизированного продавца или заказа нет в базе данных. Невозможно узнать информацию о клиенте.";
+        return "Это заказ не из магазина авторизированного продавца, или заказа нет в базе данных. Невозможно узнать информацию о клиенте.";
     }
 
     @GetMapping("/seller/orderproducts/{order_number}")
     public List<String> OrderProductsByNumber(@PathVariable("order_number") Integer order_number) {
         OrderDao orderDao = new OrderDao();
-        List<Integer> orders = GetAllOrdersOFSellerStore();
+        List<Integer> orders = GetAllOrdersOfSellerStore();
         List<String> OrderProducts = new ArrayList<>();
         Double totalcost = 0.0;
+        ProductsOrderDao productsOrderDao = new ProductsOrderDao();
+        List<ProductsOrder> ProductsOrder = productsOrderDao.findAll();
+        ProductsDao productsDao = new ProductsDao();
+        SellerDao sellerDao = new SellerDao();
         for (int i = 0; i < orders.size(); i++) {
             if (orders.get(i).equals(order_number)) {
                 int orderid = orderDao.findOrderByNumber(order_number).GetId();
-                ProductsOrderDao productsOrderDao = new ProductsOrderDao();
-                List<ProductsOrder> ProductsOrder = productsOrderDao.findAll();
-                ProductsDao productsDao = new ProductsDao();
                 for (int j = 0; j < ProductsOrder.size(); j++) {
                     if (ProductsOrder.get(j).GetOrderId() == orderid) {
                         Products products = productsDao.findProductsById(ProductsOrder.get(j).GetProductId());
-                        totalcost += products.GetPrice() * ProductsOrder.get(j).GetQuantity();
-                        OrderProducts.add(products.GetName() + ";" + products.GetPrice() + ";" + ProductsOrder.get(j).GetQuantity() + ";" + products.GetPrice() * ProductsOrder.get(j).GetQuantity());
+                        if (products.GetStoreId()==sellerDao.findSellerBySellername(GetLoginname()).GetStoreId()) {
+                            totalcost += products.GetPrice() * ProductsOrder.get(j).GetQuantity();
+                            OrderProducts.add(products.GetName() + ";" + products.GetPrice() + ";" + ProductsOrder.get(j).GetQuantity() + ";" + products.GetPrice() * ProductsOrder.get(j).GetQuantity());
+                        }
                     }
                 }
                 OrderProducts.add("Итоговая стоимость заказа: " + totalcost.toString());
                 return OrderProducts;
             }
         }
-        OrderProducts.add("Это заказ не из магазина авторизированного продавца или заказа нет в базе данных.");
+        OrderProducts.add("Это заказ не из магазина авторизированного продавца, или заказа нет в базе данных.");
         return OrderProducts;
     }
 
@@ -180,6 +197,95 @@ public class Controller {
             ProductsStr.add(store_name + ";" + Products.get(i).GetName() + ";" + Products.get(i).GetPrice());
         }
         return ProductsStr;
+    }
+
+    @GetMapping("/user/orders")
+    public List<Integer> GetAllOrdersOfClient() {
+        UserDao userDao = new UserDao();
+        OrderDao orderDao = new OrderDao();
+        int clientid = userDao.findUserByusername(GetLoginname()).GetUserClientId();
+        List<Integer> Orders = new ArrayList<>();
+        for (int i = 0; i < orderDao.findAll().size(); i++) {
+            if (orderDao.findAll().get(i).GetClientId()==clientid) {
+                Orders.add(orderDao.findAll().get(i).GetNumber());
+            }
+        }
+        return Orders;
+    }
+
+    @GetMapping("/user/orderproducts/{order_number}")
+    public List<String> ProductsByOrderNumber(@PathVariable("order_number") Integer order_number) {
+        OrderDao orderDao = new OrderDao();
+        List<Integer> orders = GetAllOrdersOfClient();
+        List<String> OrderProducts = new ArrayList<>();
+        Double totalcost = 0.0;
+        for (int i = 0; i < orders.size(); i++) {
+            if (orders.get(i).equals(order_number)) {
+                int orderid = orderDao.findOrderByNumber(order_number).GetId();
+                ProductsOrderDao productsOrderDao = new ProductsOrderDao();
+                List<ProductsOrder> ProductsOrder = productsOrderDao.findAll();
+                ProductsDao productsDao = new ProductsDao();
+                for (int j = 0; j < ProductsOrder.size(); j++) {
+                    if (ProductsOrder.get(j).GetOrderId() == orderid) {
+                        Products products = productsDao.findProductsById(ProductsOrder.get(j).GetProductId());
+                        totalcost += products.GetPrice() * ProductsOrder.get(j).GetQuantity();
+                        OrderProducts.add(products.GetName() + ";" + products.GetPrice() + ";" + ProductsOrder.get(j).GetQuantity() + ";" + products.GetPrice() * ProductsOrder.get(j).GetQuantity());
+                    }
+                }
+                OrderProducts.add("Итоговая стоимость заказа: " + totalcost.toString());
+                return OrderProducts;
+            }
+        }
+        OrderProducts.add("Это заказ неавторизированного пользователя, или заказа нет в базе данных.");
+        return OrderProducts;
+    }
+
+    @PutMapping("/user/order/save/{order_number}")
+    public String CreateNewOrder(@PathVariable("order_number") Integer order_number) throws Exception {
+        OrderDao orderDao = new OrderDao();
+        UserDao userDao = new UserDao();
+        int clientid = userDao.findUserByusername(GetLoginname()).GetUserClientId();
+        Order order = new Order(clientid,order_number, "Created", CurrentDate.Get_current_date());
+        orderDao.save(order);
+        return "Исходно пустой заказ создан. Вот информация о нём: " + order.GetOrderInfoForClient();
+    }
+
+    @PutMapping("/user/product/save/{order_number}/{store_name}/{product_name}/{quantity}")
+    public String AddProductToOrder(@PathVariable("order_number") Integer order_number , @PathVariable("store_name") String store_name, @PathVariable("product_name") String product_name, @PathVariable("quantity") Integer quantity) throws Exception {
+        OrderDao orderDao = new OrderDao();
+        ProductsOrderDao productsOrderDao = new ProductsOrderDao();
+        ProductsDao productsDao = new ProductsDao();
+        StoreDao storeDao = new StoreDao();
+        int productid;
+        List<Products> Products = productsDao.findAll();
+        List<Integer> orders = GetAllOrdersOfClient();
+        for (int j = 0; j < orders.size(); j++) {
+            if (order_number.equals(orders.get(j))) {
+                int orderid = orderDao.findOrderByNumber(order_number).GetId();
+                for (int k = 0; k < Products.size(); k++) {
+                    if(Products.get(k).GetName().equals(product_name) &&  Products.get(k).GetStoreId()==storeDao.findStoreByName(store_name).GetId()){
+                        productid=Products.get(k).GetId();
+                        ProductsOrder productsOrder = new ProductsOrder(productid, orderid, quantity);
+                        productsOrderDao.save(productsOrder);
+                        return "Товар добавлен в заказ.";
+                    }
+                }
+            }
+        }
+        return "Товар не добавлен в заказ.";
+    }
+
+    @GetMapping("/user/order/status/{order_number}")
+    public String GetOrderStatus(@PathVariable("order_number") Integer order_number) {
+        UserDao userDao = new UserDao();
+        OrderDao orderDao = new OrderDao();
+        List<Integer> orders = GetAllOrdersOfClient();
+        for (int j = 0; j < orders.size(); j++) {
+            if (order_number.equals(orders.get(j))) {
+                return orderDao.findOrderByNumber(order_number).GetStatus();
+            }
+        }
+        return ("Это заказ неавторизированного пользователя, или заказа нет в базе данных.");
     }
 
     @GetMapping("/store/{id}")
@@ -284,6 +390,7 @@ public class Controller {
         info.add("Выйти из аккаунта, если в него был вход; потом можно переавторизоваться: http://localhost:8089/logout");
         info.add("Вывод всех магазинов из базы данных: http://localhost:8089/store");
         info.add("Вывод информации о магазине из базы данных по id: http://localhost:8089/store/{id}");
+        info.add("Узнать текущую дату, установленную в программе: http://localhost:8089/getdate");
 
         info.add("                                                                                                                                                                                                                                                    ");
         info.add("                                                                                                                                                                                                                                                    ");
@@ -292,7 +399,11 @@ public class Controller {
         info.add("Вывод информации обо всех продуктах из базы данных: http://localhost:8089/user/products");
         info.add("Вывод информации обо всех продуктах в данном магазине: http://localhost:8089/user/products/{store_name}");
         info.add("Вывод информации об авторизованном пользователе (если его username не admin и не user) из базы данных: http://localhost:8089/user/info");
-
+        info.add("Узнать номера всех заказов пользователя (если его username не admin и не user) из базы данных: http://localhost:8089/user/orders");
+        info.add("Узнать обо всех товарах и итоговой стоимости заказа пользователя (если его username не admin и не user) из базы данных: http://localhost:8089/user/orderproducts/{order_number}");
+        info.add("Создать новый исходно пустой заказ (если его username не admin и не user) из базы данных: http://localhost:8089/user/order/save/{order_number}");
+        info.add("Добавить товар в заказ (если его username не admin и не user) из базы данных: http://localhost:8089/user/product/save/{order_number}/{store_name}/{product_name}/{quantity}");
+        info.add("Узнать статус заказа (если его username не admin и не user) из базы данных: http://localhost:8089/user/order/status/{order_number}");
 
         info.add("                                                                                                                                                                                                                                                    ");
         info.add("                                                                                                                                                                                                                                                    ");
@@ -313,6 +424,7 @@ public class Controller {
         info.add("Вывод всех клиентов из базы данных: http://localhost:8089/admin/client");
         info.add("Вывод всех продавцов из базы данных: http://localhost:8089/admin/sellers");
         info.add("Вывод данных всех пользователей: http://localhost:8089/admin/users");
+        info.add("Изменить текущую дату в системе: http://localhost:8089/admin/setdate/{date}");
         info.add("Сохранить нового человека в базу данных по имени и фамилии: http://localhost:8089/admin/client/save/{name}/{surname}");
         info.add("Сохранить новый магазин в базу данных по названию: http://localhost:8089/admin/store/save/{name}");
         info.add("Сохранить нового пользователя в базу данных по id человека, логину и паролю: http://localhost:8089/admin/user/save/{clientid}/{username}/{password}");

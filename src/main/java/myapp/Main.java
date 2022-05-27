@@ -17,7 +17,7 @@ import java.util.List;
 @SpringBootApplication
 @EnableSwagger2
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String database_name = "storage.sqlite";
 
         File f = new File(database_name);

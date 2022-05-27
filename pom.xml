@@ -115,7 +115,7 @@
                 </executions>
                 <configuration>
                     <docfilessubdirs>true</docfilessubdirs>
-                    <sourcepath>target/generated-sources/delombok</sourcepath>
+                    <sourcepath>target/delombok</sourcepath>
                 </configuration>
             </plugin>
 
@@ -133,7 +133,7 @@
                             <addOutputDirectory>false</addOutputDirectory>
                             <sourceDirectory>src</sourceDirectory>
                             <outputDirectory>
-                                ${project.build.directory}/generated-sources/delombok
+                                ${project.build.directory}/delombok
                             </outputDirectory>
                         </configuration>
                     </execution>

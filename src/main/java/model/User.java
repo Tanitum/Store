@@ -23,6 +23,10 @@ public class User {
         return id;
     }
 
+    public int GetUserClientId() {
+        return clientid;
+    }
+
     public String GetUser_username() {
         return username;
     }
